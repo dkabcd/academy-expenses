@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사교육비 계산기</title>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QSZF8RQ6WE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-QSZF8RQ6WE');
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .academy-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        .academy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .academy-number {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            border: 2px dashed #667eea;
+            color: #667eea;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+        }
+
+        .add-btn:hover:not(:disabled) {
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+
+        .add-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #ccc;
+            color: #999;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .calculate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result {
+            display: none;
+            margin-top: 32px;
+            padding: 24px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 16px;
+            border: 2px solid #667eea;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .result-title {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-item {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #333;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .comparison {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 0;
+        }
+
+        .comparison-row {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .comparison-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .higher {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        .lower {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .cta-section {
+            margin-top: 24px;
+            padding: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .cta-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .cta-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background: #f8f9ff;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div style="color: #667eea; font-weight: 600;">데이터 저장 중...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>💰 사교육비 계산기</h1>
+        <p class="subtitle">우리 아이 학원비, 평균과 비교해보세요</p>
+
+        <form id="calculatorForm">
+            <div class="form-group">
+                <label for="grade">학년 선택</label>
+                <select id="grade" required>
+                    <option value="">선택하세요</option>
+                    <option value="elementary">초등학생</option>
+                    <option value="middle">중학생</option>
+                    <option value="high">고등학생</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="region">지역 선택</label>
+                <select id="region" required>
+                    <option value="">선택하세요</option>
+                    <option value="seoul">서울</option>
+                    <option value="busan">부산</option>
+                    <option value="daegu">대구</option>
+                    <option value="incheon">인천</option>
+                    <option value="gwangju">광주</option>
+                    <option value="daejeon">대전</option>
+                    <option value="ulsan">울산</option>
+                    <option value="sejong">세종</option>
+                    <option value="gyeonggi">경기</option>
+                    <option value="gangwon">강원</option>
+                    <option value="chungbuk">충북</option>
+                    <option value="chungnam">충남</option>
+                    <option value="jeonbuk">전북</option>
+                    <option value="jeonnam">전남</option>
+                    <option value="gyeongbuk">경북</option>
+                    <option value="gyeongnam">경남</option>
+                    <option value="jeju">제주</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="school">학교명</label>
+                <input type="text" id="school" placeholder="예: OO초등학교" required>
+            </div>
+
+            <div id="academyList">
+                <div class="academy-item" data-index="0">
+                    <div class="academy-header">
+                        <span class="academy-number">학원 1</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>과목</label>
+                            <select class="subject" required>
+                                <option value="">선택하세요</option>
+                                <option value="국어">국어</option>
+                                <option value="영어">영어</option>
+                                <option value="수학">수학</option>
+                                <option value="과학">과학</option>
+                                <option value="사회">사회</option>
+                                <option value="예체능">예체능</option>
+                                <option value="코딩">코딩</option>
+                                <option value="기타">기타</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>월 비용 (원)</label>
+                            <input type="number" class="cost" placeholder="예: 300000" min="0" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="add-btn" id="addAcademy">+ 학원 추가</button>
+            <button type="submit" class="calculate-btn">계산하기</button>
+        </form>
+
+        <div id="result" class="result">
+            <div class="result-title">📊 분석 결과</div>
+            <div class="result-item">
+                <div class="result-label">우리 아이 총 학원비</div>
+                <div class="result-value" id="totalCost">0원</div>
+            </div>
+            <div class="result-grid">
+                <div class="result-card">
+                    <div class="result-label">지역 평균 사교육비</div>
+                    <div class="result-value" id="averageCost">0원</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">선택한 과목 평균 사교육비 합계</div>
+                    <div class="result-value" id="subjectAverage">0원</div>
+                    <div style="font-size: 12px; color: #999; margin-top: 4px;" id="selectedSubjects"></div>
+                </div>
+            </div>
+            <div class="comparison">
+                <div class="comparison-row" id="regionComparison"></div>
+                <div class="comparison-row" id="subjectComparison"></div>
+            </div>
+            <div class="cta-section">
+                <div class="cta-title">💡 더 합리적인 학원을 찾고 계신가요?</div>
+                <div class="cta-text">
+                    학원 비교 플랫폼에서 우리 아이 학교 주변의<br>
+                    다양한 학원 정보를 확인해보세요
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px;">
+                    <a href="https://learns.academy/" class="cta-btn" target="_blank" rel="noopener">런즈</a>
+                    <a href="https://school.iamservice.net/institute/surrounding" class="cta-btn" target="_blank" rel="noopener">아이엠스쿨</a>
+                    <a href="https://www.mygongbu.com/academy/search_school.wnw" class="cta-btn" target="_blank" rel="noopener">일등공부</a>
+                </div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.7); line-height: 1.4;">
+                    * 외부 사이트로 이동합니다<br>
+                    * 본 서비스는 위 플랫폼들과 제휴 관계가 없습니다
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ 여기에 Google Apps Script 웹앱 URL을 입력하세요
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzU-_5wZbHWmSBM8kQTi5SaidXFv34u_00zv9YulArg_V_w30RrG_asDfVFVuoDnaxQ/exec';
+
+        // KOSIS 기반 평균 사교육비 데이터 (2024년 기준, 원 단위)
+        const averageData = {
+            elementary: {
+                seoul: 450000, busan: 320000, daegu: 300000, incheon: 350000, gwangju: 280000,
+                daejeon: 310000, ulsan: 290000, sejong: 330000, gyeonggi: 380000, gangwon: 250000,
+                chungbuk: 260000, chungnam: 270000, jeonbuk: 240000, jeonnam: 230000,
+                gyeongbuk: 250000, gyeongnam: 270000, jeju: 260000
+            },
+            middle: {
+                seoul: 520000, busan: 380000, daegu: 360000, incheon: 420000, gwangju: 340000,
+                daejeon: 370000, ulsan: 350000, sejong: 400000, gyeonggi: 450000, gangwon: 300000,
+                chungbuk: 310000, chungnam: 320000, jeonbuk: 290000, jeonnam: 280000,
+                gyeongbuk: 300000, gyeongnam: 320000, jeju: 310000
+            },
+            high: {
+                seoul: 650000, busan: 480000, daegu: 450000, incheon: 520000, gwangju: 420000,
+                daejeon: 460000, ulsan: 440000, sejong: 500000, gyeonggi: 560000, gangwon: 380000,
+                chungbuk: 390000, chungnam: 400000, jeonbuk: 360000, jeonnam: 350000,
+                gyeongbuk: 380000, gyeongnam: 400000, jeju: 390000
+            }
+        };
+
+        const subjectAverage = {
+            '국어': 250000, '영어': 300000, '수학': 320000, '과학': 280000,
+            '사회': 220000, '예체능': 350000, '코딩': 280000, '기타': 250000
+        };
+
+        const gradeNames = {
+            'elementary': '초등학생',
+            'middle': '중학생',
+            'high': '고등학생'
+        };
+
+        const regionNames = {
+            'seoul': '서울', 'busan': '부산', 'daegu': '대구', 'incheon': '인천',
+            'gwangju': '광주', 'daejeon': '대전', 'ulsan': '울산', 'sejong': '세종',
+            'gyeonggi': '경기', 'gangwon': '강원', 'chungbuk': '충북', 'chungnam': '충남',
+            'jeonbuk': '전북', 'jeonnam': '전남', 'gyeongbuk': '경북', 'gyeongnam': '경남',
+            'jeju': '제주'
+        };
+
+        const MAX_ACADEMIES = 10;
+
+        // 숫자를 천 단위 콤마로 포맷팅
+        const formatNumber = (num) => num.toLocaleString('ko-KR');
+
+        // 학원 번호 재정렬
+        function updateAcademyNumbers() {
+            const academies = document.querySelectorAll('.academy-item');
+            academies.forEach((academy, index) => {
+                const numberSpan = academy.querySelector('.academy-number');
+                numberSpan.textContent = `학원 ${index + 1}`;
+                academy.dataset.index = index;
+            });
+            
+            // 추가 버튼 활성화/비활성화
+            const addBtn = document.getElementById('addAcademy');
+            if (academies.length >= MAX_ACADEMIES) {
+                addBtn.disabled = true;
+                addBtn.textContent = `+ 학원 추가 (최대 ${MAX_ACADEMIES}개)`;
+            } else {
+                addBtn.disabled = false;
+                addBtn.textContent = '+ 학원 추가';
+            }
+        }
+
+        // 학원 추가
+        document.getElementById('addAcademy').addEventListener('click', function() {
+            const academyList = document.getElementById('academyList');
+            const currentCount = document.querySelectorAll('.academy-item').length;
+            
+            if (currentCount >= MAX_ACADEMIES) {
+                alert(`학원은 최대 ${MAX_ACADEMIES}개까지만 추가할 수 있습니다.`);
+                return;
+            }
+            
+            // GA4 이벤트 추적
+            gtag('event', 'add_academy', {
+                'event_category': 'engagement',
+                'event_label': 'academy_count',
+                'value': currentCount + 1
+            });
+            
+            const newAcademy = document.createElement('div');
+            newAcademy.className = 'academy-item';
+            newAcademy.innerHTML = `
+                <div class="academy-header">
+                    <span class="academy-number">학원 ${currentCount + 1}</span>
+                    <button type="button" class="remove-btn" onclick="removeAcademy(this)">삭제</button>
+                </div>
+                <div class="input-row">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>과목</label>
+                        <select class="subject" required>
+                            <option value="">선택하세요</option>
+                            <option value="국어">국어</option>
+                            <option value="영어">영어</option>
+                            <option value="수학">수학</option>
+                            <option value="과학">과학</option>
+                            <option value="사회">사회</option>
+                            <option value="예체능">예체능</option>
+                            <option value="코딩">코딩</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>월 비용 (원)</label>
+                        <input type="number" class="cost" placeholder="예: 300000" min="0" required>
+                    </div>
+                </div>
+            `;
+            academyList.appendChild(newAcademy);
+            updateAcademyNumbers();
+        });
+
+        // 학원 삭제
+        window.removeAcademy = function(btn) {
+            const academyList = document.getElementById('academyList');
+            const academies = academyList.querySelectorAll('.academy-item');
+            
+            // 최소 1개는 남겨야 함
+            if (academies.length <= 1) {
+                alert('최소 1개의 학원은 입력해야 합니다.');
+                return;
+            }
+            
+            const item = btn.closest('.academy-item');
+            item.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                item.remove();
+                updateAcademyNumbers();
+            }, 300);
+        };
+
+        // 구글 시트에 데이터 전송
+        async function sendToGoogleSheet(data) {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                // no-cors 모드에서는 response를 읽을 수 없으므로
+                // 요청이 성공적으로 전송되었다고 가정
+                return { success: true };
+            } catch (error) {
+                console.error('Error sending to Google Sheet:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // 계산하기
+        document.getElementById('calculatorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const grade = document.getElementById('grade').value;
+            const region = document.getElementById('region').value;
+            const school = document.getElementById('school').value;
+
+            const academies = document.querySelectorAll('.academy-item');
+            let totalCost = 0;
+            let subjects = [];
+            let academyData = [];
+
+            academies.forEach(academy => {
+                const subject = academy.querySelector('.subject').value;
+                const cost = parseFloat(academy.querySelector('.cost').value) || 0;
+                totalCost += cost;
+                if (subject) {
+                    subjects.push(subject);
+                    academyData.push({ subject, cost });
+                }
+            });
+
+            // 구글 시트에 데이터 전송
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const calculateBtn = document.querySelector('.calculate-btn');
+            
+            loadingOverlay.classList.add('show');
+            calculateBtn.disabled = true;
+
+            const sheetData = {
+                grade: gradeNames[grade],
+                region: regionNames[region],
+                school: school,
+                academies: academyData
+            };
+
+            const result = await sendToGoogleSheet(sheetData);
+            
+            loadingOverlay.classList.remove('show');
+            calculateBtn.disabled = false;
+
+            if (!result.success && result.error) {
+                console.warn('데이터 전송 실패:', result.error);
+                // 실패해도 계산 결과는 표시
+            }
+
+            // 계산 로직
+            const average = averageData[grade][region];
+            const difference = totalCost - average;
+            const percentage = ((difference / average) * 100).toFixed(1);
+
+            // 과목별 평균 계산
+            let subjectTotalAverage = 0;
+            subjects.forEach(subject => {
+                subjectTotalAverage += subjectAverage[subject];
+            });
+
+            const subjectDifference = totalCost - subjectTotalAverage;
+            const subjectPercentage = subjectTotalAverage > 0 ? ((subjectDifference / subjectTotalAverage) * 100).toFixed(1) : 0;
+
+            const subjectText = subjects.join(', ');
+            
+            // 결과 표시
+            document.getElementById('totalCost').textContent = `${formatNumber(totalCost)}원`;
+            document.getElementById('averageCost').textContent = `${formatNumber(average)}원`;
+            document.getElementById('subjectAverage').textContent = `${formatNumber(subjectTotalAverage)}원`;
+            document.getElementById('selectedSubjects').textContent = subjectText ? `(${subjectText})` : '';
+
+            // 지역 비교
+            let regionComparisonHTML = `<strong>${school}</strong>가 위치한 지역의 평균보다 `;
+            if (difference > 0) {
+                regionComparisonHTML += `<span class="higher">${formatNumber(Math.abs(difference))}원 (${Math.abs(percentage)}%) 높습니다</span> 💸`;
+            } else if (difference < 0) {
+                regionComparisonHTML += `<span class="lower">${formatNumber(Math.abs(difference))}원 (${Math.abs(percentage)}%) 낮습니다</span> 📊`;
+            } else {
+                regionComparisonHTML += `<span class="highlight">동일합니다</span> 📊`;
+            }
+
+            // 과목별 비교
+            let subjectComparisonHTML = '';
+            if (subjects.length > 0) {
+                subjectComparisonHTML = `<strong>${subjectText}</strong> 과목별 평균의 합계보다 `;
+                if (subjectDifference > 0) {
+                    subjectComparisonHTML += `<span class="higher">${formatNumber(Math.abs(subjectDifference))}원 (${Math.abs(subjectPercentage)}%) 높습니다</span> 💸`;
+                } else if (subjectDifference < 0) {
+                    subjectComparisonHTML += `<span class="lower">${formatNumber(Math.abs(subjectDifference))}원 (${Math.abs(subjectPercentage)}%) 낮습니다</span> 📊`;
+                } else {
+                    subjectComparisonHTML += `<span class="highlight">동일합니다</span> 📊`;
+                }
+            }
+
+            document.getElementById('regionComparison').innerHTML = regionComparisonHTML;
+            document.getElementById('subjectComparison').innerHTML = subjectComparisonHTML;
+
+            // GA4 이벤트 추적 - 계산 완료
+            gtag('event', 'calculation_complete', {
+                'event_category': 'conversion',
+                'grade': gradeNames[grade],
+                'region': regionNames[region],
+                'academy_count': subjects.length,
+                'total_cost': totalCost
+            });
+
+            document.getElementById('result').classList.add('show');
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        // 초기 로드 시 버튼 상태 확인
+        updateAcademyNumbers();
+
+        // GA4 이벤트 추적 - 학년 선택
+        document.getElementById('grade').addEventListener('change', function(e) {
+            if (e.target.value) {
+                gtag('event', 'select_grade', {
+                    'event_category': 'engagement',
+                    'event_label': e.target.value
+                });
+            }
+        });
+
+        // GA4 이벤트 추적 - 지역 선택
+        document.getElementById('region').addEventListener('change', function(e) {
+            if (e.target.value) {
+                gtag('event', 'select_region', {
+                    'event_category': 'engagement',
+                    'event_label': e.target.value
+                });
+            }
+        });
+
+        // GA4 이벤트 추적 - 외부 링크 클릭
+        document.addEventListener('DOMContentLoaded', function() {
+            // 결과가 표시된 후에 링크에 이벤트 리스너 추가
+            const observer = new MutationObserver(function(mutations) {
+                const ctaLinks = document.querySelectorAll('.cta-btn');
+                ctaLinks.forEach(link => {
+                    if (!link.dataset.tracked) {
+                        link.dataset.tracked = 'true';
+                        link.addEventListener('click', function(e) {
+                            const platform = this.textContent.trim();
+                            gtag('event', 'click_platform_link', {
+                                'event_category': 'engagement',
+                                'event_label': platform,
+                                'platform_name': platform
+                            });
+                        });
+                    }
+                });
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    </script>
+</body>
+</html>
