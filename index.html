@@ -501,7 +501,7 @@
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
                             <label>월 비용 (원)</label>
-                            <input type="number" class="cost" placeholder="예: 300000" min="0" required>
+                            <input type="number" class="cost" placeholder="예: 300,000" min="0" required>
                         </div>
                     </div>
                 </div>
@@ -598,6 +598,15 @@
 
         const MAX_ACADEMIES = 10;
 
+        // 입력란에 자동 콤마 추가
+        function addCommaEvent(input) {
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/,/g, '');
+                value = value.replace(/\D/g, '');
+                e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            });
+        }
+        
         // 숫자를 천 단위 콤마로 포맷팅
         const formatNumber = (num) => num.toLocaleString('ko-KR');
 
@@ -662,11 +671,16 @@
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
                         <label>월 비용 (원)</label>
-                        <input type="number" class="cost" placeholder="예: 300000" min="0" required>
+                        <input type="number" class="cost" placeholder="예: 300,000" min="0" required>
                     </div>
                 </div>
             `;
             academyList.appendChild(newAcademy);
+            
+            // 새로 추가된 입력란에 콤마 이벤트 추가
+            const newCostInput = newAcademy.querySelector('.cost');
+            addCommaEvent(newCostInput);
+
             updateAcademyNumbers();
         });
 
@@ -725,7 +739,8 @@
 
             academies.forEach(academy => {
                 const subject = academy.querySelector('.subject').value;
-                const cost = parseFloat(academy.querySelector('.cost').value) || 0;
+                const costValue = academy.querySelector('.cost').value.replace(/,/g, '');
+                const cost = parseFloat(costValue) || 0;
                 totalCost += cost;
                 if (subject) {
                     subjects.push(subject);
@@ -820,6 +835,10 @@
 
         // 초기 로드 시 버튼 상태 확인
         updateAcademyNumbers();
+        
+        // 첫 번째 학원 입력란에 콤마 이벤트 추가
+        const firstCostInput = document.querySelector('.cost');
+        addCommaEvent(firstCostInput);
 
         // GA4 이벤트 추적 - 학년 선택
         document.getElementById('grade').addEventListener('change', function(e) {
